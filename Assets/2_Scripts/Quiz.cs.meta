@@ -1,2 +1,15 @@
 fileFormatVersion: 2
 guid: d2ead64591236d0459044b417609a62b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - questionText: {instanceID: 0}
+  - questions: {fileID: 11400000, guid: 4c8226449c4cc4e4b89a8cc6778efb5d, type: 2}
+  - defaultAnswerSprite: {fileID: -2421234149185767044, guid: cac80c97c4d44664092ab69619350b03, type: 3}
+  - correctAnswerSprite: {fileID: -4659264650518790821, guid: fb5d75a3263f5574f931d72007368c98, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
