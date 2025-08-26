@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   question: "\uC9C8\uBB381"
   answers:
-  - 
-  - 
-  - 
-  - 
+  - "\uB2F5\uBCC01"
+  - "\uB2F5\uBCC02"
+  - "\uB2F5\uBCC03"
+  - "\uB2F5\uBCC04"
   correctAnswerIndex: 0
