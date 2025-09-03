@@ -1,19 +1,18 @@
 using UnityEngine;
-//using UnityEngine.UI;
 
 public class Timer : MonoBehaviour
 {
-    [SerializeField] float problemTIme = 10f;
+    [SerializeField] float problemTime = 10f;
     [SerializeField] float solutionTime = 3f;
     float time = 0f;
 
     [HideInInspector] public bool isProblemTime = true;
     [HideInInspector] public float fillAmount = 1f;
-    //[SerializeField] Image timerImage; // UI Image 연결
+    [HideInInspector] public bool loadNextQuestion;
 
     private void Start()
     {
-        time = problemTIme;
+        time = problemTime;
     }
     private void Update()
     {
@@ -22,26 +21,30 @@ public class Timer : MonoBehaviour
         {
             if (isProblemTime)
             {
+                Debug.Log("이제부터 솔루션 타입입니다.");
                 isProblemTime = false;
                 time = solutionTime;
             }
             else
             {
-                time = problemTIme;
+                Debug.Log("이제부터 문제 타입입니다.");
+                isProblemTime = true;
+                time = problemTime;
+                loadNextQuestion = true; 
             }
         }
         if (isProblemTime)
         {
-            fillAmount = time / problemTIme;
+            fillAmount = time / problemTime;
         }
         else
         {
             fillAmount = time / solutionTime;
         }
 
-        // if (timerImage != null)
-        //{
-        //    timerImage.fillAmount = fillAmount; // UI에 값 반영
-        //}
+    }
+    public void CancleTimer()
+    {
+        time = 0f;
     }
 }

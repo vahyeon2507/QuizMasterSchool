@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b03fdf6623190d2498b13e87904371ae, type: 3}
-  m_Name: "\uC9C8\uBB382"
+  m_Name: "\uC9C8\uBB383"
   m_EditorClassIdentifier: 
-  question: "\uC9C8\uBB382"
+  question: "1+1\uC740"
   answers:
-  - "\uB2F5\uBCC01-2"
-  - "\uB2F5\uBCC02-2"
-  - "\uB2F5\uBCC03-2"
-  - "\uB2F5\uBCC04-2"
+  - 1
+  - 2
+  - 3
+  - 4
   correctAnswerIndex: 1
