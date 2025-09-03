@@ -25,7 +25,7 @@ public class Quiz : MonoBehaviour
     Timer timer;
 
     [Header("점수")]
-    [SerializeField] TextMeshProUGUI scoreText; 
+    [SerializeField] TextMeshProUGUI scoreText;
     [SerializeField] ScoreKeeper scoreKeeper;
 
     [Header("진행 바")]
@@ -55,9 +55,17 @@ public class Quiz : MonoBehaviour
         timerImage.fillAmount = timer.fillAmount;
         if (timer.loadNextQuestion)
         {
-            chooseAnswer = false;
-            timer.loadNextQuestion = false;
-            GetNextQuestion();
+            if (questions.Count == 0)
+            {
+                GameManager.Instance.ShowEndingScene();
+            }
+            else
+            {
+                timer.loadNextQuestion = false;
+                chooseAnswer = false;
+                GetNextQuestion();
+            }
+
         }
         if (timer.isProblemTime == false && chooseAnswer == false)
         {
@@ -102,7 +110,7 @@ public class Quiz : MonoBehaviour
         DisplaySolution(index);
         timer.CancleTimer();
         scoreText.text = $"Score: {scoreKeeper.CalculateScorePercentage()}%";
-        
+
     }
 
     private void DisplaySolution(int index)
