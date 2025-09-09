@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class Quiz : MonoBehaviour
 {
@@ -32,14 +33,43 @@ public class Quiz : MonoBehaviour
     [SerializeField] Slider progressBar;
 
     bool chooseAnswer = false;
+    bool isGenerateQuestions = false; 
+    
 
     void Start()
     {
         timer = FindFirstObjectByType<Timer>();
         scoreKeeper = FindFirstObjectByType<ScoreKeeper>();
+        InitializeProgressbar();
+
+
+        if (questions.Count == 0)
+        {
+            GenerateQuestionsIfNeeded();
+                
+        }
+        else
+        {
+            InitializeProgressbar();
+        }
+
+        GetNextQuestion();
+    }
+
+    private void GenerateQuestionsIfNeeded()
+    {
+        if (isGenerateQuestions) return;
+
+
+
+        isGenerateQuestions = true;
+        GameManager.Instance.ShowLoadingScene();
+    }
+
+    private void InitializeProgressbar()
+    {
         progressBar.maxValue = questions.Count;
         progressBar.value = 0;
-        GetNextQuestion();
     }
 
     private void Update()
@@ -57,7 +87,8 @@ public class Quiz : MonoBehaviour
         {
             if (questions.Count == 0)
             {
-                GameManager.Instance.ShowEndingScene();
+                GenerateQuestionsIfNeeded();
+                // GameManager.Instance.ShowEndingScene();
             }
             else
             {
