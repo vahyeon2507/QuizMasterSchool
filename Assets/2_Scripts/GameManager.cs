@@ -59,6 +59,8 @@ public class GameManager : MonoBehaviour
         EndingCanvas.gameObject.SetActive(false);
         LoadingCanvas.SetActive(true);
     }
+
+
 }
 
 

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
+using UnityEngine.Networking;
 
 public class Quiz : MonoBehaviour
 {
@@ -32,21 +32,27 @@ public class Quiz : MonoBehaviour
     [Header("진행 바")]
     [SerializeField] Slider progressBar;
 
+    [Header("ChatGPT Client")]
+    [SerializeField] ChatGPTClient chatGPTClient;
+    [SerializeField] int QuestionCount = 10;
+    [SerializeField] TextMeshProUGUI LoadingText;
+
     bool chooseAnswer = false;
-    bool isGenerateQuestions = false; 
-    
+    bool isGenerateQuestions = false;
+
 
     void Start()
     {
         timer = FindFirstObjectByType<Timer>();
         scoreKeeper = FindFirstObjectByType<ScoreKeeper>();
         InitializeProgressbar();
+        chatGPTClient.quizGenerateHandler += QuizGeneratedHandler;
 
 
         if (questions.Count == 0)
         {
             GenerateQuestionsIfNeeded();
-                
+
         }
         else
         {
@@ -60,10 +66,39 @@ public class Quiz : MonoBehaviour
     {
         if (isGenerateQuestions) return;
 
-
-
         isGenerateQuestions = true;
         GameManager.Instance.ShowLoadingScene();
+
+        string topicToUse = GetTrendingTopic();
+        chatGPTClient.GenerateQuizQuestions(QuestionCount, topicToUse);
+        Debug.Log($"2. Generating {QuestionCount} questions about {topicToUse}");
+    }
+
+    private string GetTrendingTopic()
+    {
+        string[] topics = new string[] { "K-Pop", "비디오 게임" };
+        int randomindex = UnityEngine.Random.Range(0, topics.Length);
+        return topics[randomindex];
+    }
+
+
+    void QuizGeneratedHandler(List<QuestionSO> GeneratedQuestions)
+    {
+        Debug.Log("3. QuizGeneratedHandler called with " + GeneratedQuestions.Count + " questions.");
+        isGenerateQuestions = false;
+
+        if (GeneratedQuestions == null || GeneratedQuestions.Count == 0)
+        {
+            Debug.LogError("문제 생성에 실패했습니다..");
+            LoadingText.text = ("문제 생성에 실패했습니다.");
+            return;
+        }
+
+
+        questions.AddRange(GeneratedQuestions);
+        progressBar.maxValue += GeneratedQuestions.Count;
+
+        GameManager.Instance.ShowQuizScene();
     }
 
     private void InitializeProgressbar()

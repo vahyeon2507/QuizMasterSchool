@@ -26,4 +26,11 @@ public class QuestionSO : ScriptableObject
     {
         return correctAnswerIndex;
     }
+
+    public void SetData(string q, string[] a, int correctIndex)
+    {
+        question = q;
+        answers = a;
+        correctAnswerIndex = correctIndex;
+    }
 }
