@@ -28,6 +28,7 @@ public class Quiz : MonoBehaviour
     [Header("점수")]
     [SerializeField] TextMeshProUGUI scoreText;
     [SerializeField] ScoreKeeper scoreKeeper;
+    [SerializeField] TextMeshProUGUI CorrectRatetext;
 
     [Header("진행 바")]
     [SerializeField] Slider progressBar;
@@ -36,6 +37,14 @@ public class Quiz : MonoBehaviour
     [SerializeField] ChatGPTClient chatGPTClient;
     [SerializeField] int QuestionCount = 10;
     [SerializeField] TextMeshProUGUI LoadingText;
+
+    [Header("힌트")]
+    [SerializeField] TextMeshProUGUI Hint;
+
+    [Header("오디오")]
+    [SerializeField] AudioSource audioSource; // AudioSource 연결
+    [SerializeField] AudioClip correctSound;  // 정답 소리
+    [SerializeField] AudioClip wrongSound;    // 오답 소리
 
     bool chooseAnswer = false;
     bool isGenerateQuestions = false;
@@ -48,6 +57,11 @@ public class Quiz : MonoBehaviour
         InitializeProgressbar();
         chatGPTClient.quizGenerateHandler += QuizGeneratedHandler;
 
+        string selectedTopic = PlayerPrefs.GetString("SelectedTopic", "일반상식");
+        int questionCount = PlayerPrefs.GetInt("QuestionCount", 10);
+
+        // chatGPTClient가 인스펙터에 연결되어 있다고 가정
+        chatGPTClient.GenerateQuizQuestions(questionCount, selectedTopic);
 
         if (questions.Count == 0)
         {
@@ -118,12 +132,25 @@ public class Quiz : MonoBehaviour
             timerImage.sprite = SolutionTimerSprite;
         }
         timerImage.fillAmount = timer.fillAmount;
+
+        // 5초 이하일 때 힌트 표시
+        if (timer.isProblemTime && timer.fillAmount * timer.ProblemTime <= 5f && Hint != null)
+        {
+            if (currentQuestion != null)
+                Hint.text = currentQuestion.GetHint();
+        }
+        else if (Hint != null)
+        {
+            Hint.text = ""; // 그 외에는 힌트 숨김
+        }
+
         if (timer.loadNextQuestion)
         {
             if (questions.Count == 0)
             {
-                GenerateQuestionsIfNeeded();
-                // GameManager.Instance.ShowEndingScene();
+                // 문제가 없을 때 EndingCanvas 열기
+                GameManager.Instance.ShowEndingScene();
+                return;
             }
             else
             {
@@ -131,7 +158,6 @@ public class Quiz : MonoBehaviour
                 chooseAnswer = false;
                 GetNextQuestion();
             }
-
         }
         if (timer.isProblemTime == false && chooseAnswer == false)
         {
@@ -144,6 +170,8 @@ public class Quiz : MonoBehaviour
         if (questions.Count == 0)
         {
             Debug.Log("더 이상 질문이 없습니다.");
+            // 문제가 없을 때 EndingCanvas 열기
+            GameManager.Instance.ShowEndingScene();
             return;
         }
         chooseAnswer = false;
@@ -175,8 +203,27 @@ public class Quiz : MonoBehaviour
         chooseAnswer = true;
         DisplaySolution(index);
         timer.CancleTimer();
-        scoreText.text = $"Score: {scoreKeeper.CalculateScorePercentage()}%";
 
+        // 정답/오답 소리 재생
+        if ((index + 1) == (currentQuestion.GetCorrectAnswerIndex() + 1))
+        {
+            PlaySound(correctSound); // 정답 소리
+        }
+        else
+        {
+            PlaySound(wrongSound); // 오답 소리
+        }
+
+        // 문제 시간에 정답을 맞췄을 때 남은 시간 비례 점수
+        if ((index + 1) == (currentQuestion.GetCorrectAnswerIndex() + 1) && timer.isProblemTime)
+        {
+            int maxScore = 100; // 문제당 최대 점수
+            int point = Mathf.RoundToInt(maxScore * timer.fillAmount);
+            scoreKeeper.AddScorePoint(point);
+        }
+
+        scoreText.text = $"Score: {scoreKeeper.GetScorePoint()}";
+        CorrectRatetext.text = $"CorrectRate: {scoreKeeper.CorrectRate()}%";
     }
 
     private void DisplaySolution(int index)
@@ -208,6 +255,14 @@ public class Quiz : MonoBehaviour
         foreach (GameObject obj in answerButtons)
         {
             obj.GetComponent<Image>().sprite = defaultAnswerSprite;
+        }
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 }

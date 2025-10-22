@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
         Quiz.gameObject.SetActive(true);
         EndingCanvas.gameObject.SetActive(false);
         LoadingCanvas.SetActive(false);
+        BGMManager.Instance?.PlayQuizBGM();
     }
 
     public void ShowEndingScene()
@@ -41,7 +42,9 @@ public class GameManager : MonoBehaviour
         EndingCanvas.gameObject.SetActive(true);
         EndingCanvas.ShowEnding();
         LoadingCanvas.SetActive(false);
+        BGMManager.Instance?.PlayEndingBGM();
     }
+
     void Update()
     {
 
@@ -54,13 +57,11 @@ public class GameManager : MonoBehaviour
     }
 
     public void ShowLoadingScene()
-        {
+    {
         Quiz.gameObject.SetActive(false);
         EndingCanvas.gameObject.SetActive(false);
         LoadingCanvas.SetActive(true);
     }
-
-
 }
 
 

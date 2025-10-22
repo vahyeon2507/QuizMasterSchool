@@ -8,7 +8,7 @@ public class EndingCanvas : MonoBehaviour
     
     public void ShowEnding()
     {
-     endingText.text = $"축하합니다!\n\r당신의 점수는 {scoreKeeper.CalculateScorePercentage()}%입니다.";
+     endingText.text = $"축하합니다!\n\r당신의 점수는 {scoreKeeper.CorrectRate()}%입니다.";
 
     }
 
