@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -51,11 +52,33 @@ public class QuizQuestion
 public class ChatGPTClient : MonoBehaviour
 {
     private const string API_URL = "https://api.openai.com/v1/chat/completions";
-    private string apiKey = "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";
+    private string apiKey;
 
     public delegate void QuizGenerateHandler(List<QuestionSO> questions);
     public event QuizGenerateHandler quizGenerateHandler;
 
+    private void Awake()
+    {
+        apiKey = LoadFromResources();
+    }
+
+    private string LoadFromResources()
+    {
+        TextAsset configFile = Resources.Load<TextAsset>("config");
+        if (configFile != null)
+        {
+            string[] strings = configFile.text.Split( '\n' );
+            foreach (string line in strings)
+            {
+                if (line.StartsWith("OpenAI_API_Key="))
+                {
+                    return line.Substring("OpenAI_API_Key=".Length).Trim();
+                }
+            }
+        }
+
+        return "";
+    }
     public void GenerateQuizQuestions(int count = 3, string topic = "일반상식")
     {
         StartCoroutine(RequestQuizQuestions(count, topic));
